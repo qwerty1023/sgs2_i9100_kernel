@@ -1,0 +1,11 @@
+--- drivers/usb/host/xhci.h
++++ drivers/usb/host/xhci.h
+@@ -1498,6 +1506,8 @@
+ #endif
+ 
+ /* xHCI host controller glue */
++int handshake(struct xhci_hcd *xhci, void __iomem *ptr,
++		u32 mask, u32 done, int usec);
+ void xhci_quiesce(struct xhci_hcd *xhci);
+ int xhci_halt(struct xhci_hcd *xhci);
+ int xhci_reset(struct xhci_hcd *xhci);

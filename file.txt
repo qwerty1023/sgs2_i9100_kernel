@@ -1,0 +1,7 @@
+'/home/sandra/source/sgs2_kernel/Kernel-Apolo-JB-4.1.2/drivers/media/video/samsung/mali/platform/orion-m400/mali_platform_dvfs.c'
+
+'/home/sandra/source/sgs2_kernel/Kernel-Apolo-JB-4.1.2/arch/arm/mach-exynos/busfreq.c'
+
+'/home/sandra/source/sgs2_kernel/Kernel-Apolo-JB-4.1.2/arch/arm/mach-exynos/cpufreq-4210.c~'
+
+
