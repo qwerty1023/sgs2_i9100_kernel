@@ -134,8 +134,6 @@ x509.genkey
 all.config
 android-toolchain/
 zImage_in
-scripts/
-lib/
 arch/arm/boot/Image
 *.lds
-usr/
+
