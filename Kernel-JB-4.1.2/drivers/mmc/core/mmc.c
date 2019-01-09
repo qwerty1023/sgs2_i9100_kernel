@@ -12,12 +12,10 @@
 
 #include <linux/err.h>
 #include <linux/slab.h>
-#include <linux/stat.h>
 
 #include <linux/mmc/host.h>
 #include <linux/mmc/card.h>
 #include <linux/mmc/mmc.h>
-#include <linux/string.h>
 
 #include "core.h"
 #include "bus.h"
@@ -109,8 +107,6 @@ static int mmc_decode_cid(struct mmc_card *card)
 		card->cid.prod_name[3]	= UNSTUFF_BITS(resp, 72, 8);
 		card->cid.prod_name[4]	= UNSTUFF_BITS(resp, 64, 8);
 		card->cid.prod_name[5]	= UNSTUFF_BITS(resp, 56, 8);
-		card->cid.prod_rev	= UNSTUFF_BITS(resp, 48, 8);
-		card->cid.fwrev		= card->cid.prod_rev; /* duplicates cid.prod_rev */
 		card->cid.serial	= UNSTUFF_BITS(resp, 16, 32);
 		card->cid.month		= UNSTUFF_BITS(resp, 12, 4);
 		card->cid.year		= UNSTUFF_BITS(resp, 8, 4) + 1997;
@@ -642,9 +638,6 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 			ext_csd[EXT_CSD_MAX_PACKED_READS];
 	}
 
-	if ((card->cid.manfid == 0x15) && (ext_csd[64] & 0x01))
-		card->ext_csd.feature_support |= MMC_DISCARD_FEATURE;
-
 out:
 	return err;
 }
@@ -759,26 +752,6 @@ static const struct attribute_group *mmc_attr_groups[] = {
 
 static struct device_type mmc_type = {
 	.groups = mmc_attr_groups,
-};
-static const struct mmc_fixup mmc_fixups[] = {
-	/*
-	 * There is a bug in some Samsung emmc chips where the wear leveling
-	 * code can insert 32 Kbytes of zeros into the storage.  We can patch
-	 * the firmware in such chips each time they are powered on to prevent
-	 * the bug from occurring.  Only apply this patch to a particular
-	 * revision of the firmware of the specified chips.  Date doesn't
-	 * matter, so include all possible dates in min and max fields.
-	 */
-	MMC_FIXUP_REV("VYL00M", 0x15, CID_OEMID_ANY,
-		      cid_rev(0, 0x25, 1997, 1), cid_rev(0, 0x25, 2012, 12),
-		      add_quirk_mmc, MMC_QUIRK_SAMSUNG_WL_PATCH),
-	MMC_FIXUP_REV("KYL00M", 0x15, CID_OEMID_ANY,
-		      cid_rev(0, 0x25, 1997, 1), cid_rev(0, 0x25, 2012, 12),
-		      add_quirk_mmc, MMC_QUIRK_SAMSUNG_WL_PATCH),
-	MMC_FIXUP_REV("MAG4FA", 0x15, CID_OEMID_ANY,
-		      cid_rev(0, 0x25, 1997, 1), cid_rev(0, 0x25, 2012, 12),
-		      add_quirk_mmc, MMC_QUIRK_SAMSUNG_WL_PATCH),
-	END_FIXUP
 };
 
 /*
@@ -1032,10 +1005,6 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		err = mmc_decode_cid(card);
 		if (err)
 			goto free_card;
-		/* Detect on first access quirky cards that need help when
-		 * powered-on
-		 */
-		mmc_fixup_device(card, mmc_fixups);
 	}
 
 	/*
@@ -1439,14 +1408,6 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		host->card = card;
 
 	mmc_free_ext_csd(ext_csd);
-
-	/*
-	 * Patch the firmware in certain Samsung emmc chips to fix a
-	 * wear leveling bug.
-	 */
-	if (card->quirks & MMC_QUIRK_SAMSUNG_WL_PATCH)
-		mmc_fixup_samsung_fw(card);
-
 	return 0;
 
 free_card:
@@ -1538,17 +1499,7 @@ static int mmc_resume(struct mmc_host *host)
 	BUG_ON(!host->card);
 
 	mmc_claim_host(host);
-
 	err = mmc_init_card(host, host->ocr, host->card);
-
-	if (host->card->movi_ops == 0x2) {
-		err = mmc_start_movi_operation(host->card);
-		if (err) {
-			pr_warning("%s: movi operation is failed\n",
-							mmc_hostname(host));
-		}
-	}
-
 	mmc_release_host(host);
 
 	return err;
@@ -1561,15 +1512,6 @@ static int mmc_power_restore(struct mmc_host *host)
 	host->card->state &= ~MMC_STATE_HIGHSPEED;
 	mmc_claim_host(host);
 	ret = mmc_init_card(host, host->ocr, host->card);
-
-	if (host->card->movi_ops == 0x2) {
-		ret = mmc_start_movi_operation(host->card);
-		if (ret) {
-			pr_warning("%s: movi operation is failed\n",
-							mmc_hostname(host));
-		}
-	}
-
 	mmc_release_host(host);
 
 	return ret;
@@ -1699,20 +1641,6 @@ int mmc_attach_mmc(struct mmc_host *host)
 	mmc_claim_host(host);
 	if (err)
 		goto remove_card;
-
-	if (!strncmp(host->card->cid.prod_name, "VTU00M", 6) &&
-		(host->card->cid.prod_rev == 0xf1) &&
-		(host->card->movi_fwdate == 0x20120413)) {
-		/* It needs host work-around codes */
-		host->card->movi_ops = 0x2;
-
-		err = mmc_start_movi_operation(host->card);
-		if (err) {
-			pr_warning("%s: movi operation is failed\n",
-							mmc_hostname(host));
-			goto remove_card;
-		}
-	}
 
 	return 0;
 

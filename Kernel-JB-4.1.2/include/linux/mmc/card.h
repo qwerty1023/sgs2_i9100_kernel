@@ -10,15 +10,12 @@
 #ifndef LINUX_MMC_CARD_H
 #define LINUX_MMC_CARD_H
 
-#include <linux/device.h>
 #include <linux/mmc/core.h>
 #include <linux/mod_devicetable.h>
-#include <linux/genhd.h>
 
 struct mmc_cid {
 	unsigned int		manfid;
 	char			prod_name[8];
-	unsigned short		prod_rev;
 	unsigned int		serial;
 	unsigned short		oemid;
 	unsigned short		year;
@@ -176,12 +173,6 @@ struct sdio_func_tuple;
 
 #define SDIO_MAX_FUNCS		7
 
-/* The number of MMC physical partitions.  These consist of:
- * boot partitions (2), general purpose partitions (4) in MMC v4.4.
- */
-#define MMC_NUM_BOOT_PARTITION	2
-#define MMC_NUM_GP_PARTITION	4
-#define MMC_NUM_PHY_PARTITION	6
 /*
  * MMC device
  */
@@ -215,14 +206,10 @@ struct mmc_card {
 #define MMC_QUIRK_DISABLE_CD	(1<<5)		/* disconnect CD/DAT[3] resistor */
 #define MMC_QUIRK_INAND_CMD38	(1<<6)		/* iNAND devices have broken CMD38 */
 #define MMC_QUIRK_BLK_NO_CMD23	(1<<7)		/* Avoid CMD23 for regular multiblock */
-#define MMC_QUIRK_SAMSUNG_WL_PATCH     (1<<8)	/* Patch Samsung FW to fix wear leveling bug */
-#define MMC_QUIRK_BROKEN_BYTE_MODE_512 (1<<9)	/* Avoid sending 512 bytes in */
 /* MoviNAND secure issue */
-#define MMC_QUIRK_LONG_READ_TIME (1<<10)		/* Data read time > CSD says */
-#define MMC_QUIRK_SEC_ERASE_TRIM_BROKEN (1<<11)	/* Skip secure for erase/trim */
+#define MMC_QUIRK_MOVINAND_SECURE (1<<8)
 
-
-unsigned int    poweroff_notify_state;	/* eMMC4.5 notify feature */
+	unsigned int    poweroff_notify_state;	/* eMMC4.5 notify feature */
 #define MMC_NO_POWER_NOTIFICATION	0
 #define MMC_POWERED_ON			1
 #define MMC_POWEROFF_SHORT		2
@@ -255,15 +242,7 @@ unsigned int    poweroff_notify_state;	/* eMMC4.5 notify feature */
 	unsigned int		sd_bus_speed;	/* Bus Speed Mode set for the card */
 
 	struct dentry		*debugfs_root;
-
-	unsigned int    nr_parts;
-        unsigned int		movi_ops;
-        unsigned int		movi_fwver;
-        unsigned int		movi_fwdate;
 };
-
-#define MMC_MOVI_VER_VHX0	(1<<4)
-#define MMC_MOVI_VER_VMX0	(1<<5)
 
 /*
  *  The world is not perfect and supplies us with broken mmc/sdio devices.
@@ -455,6 +434,5 @@ extern void mmc_unregister_driver(struct mmc_driver *);
 
 extern void mmc_fixup_device(struct mmc_card *card,
 			     const struct mmc_fixup *table);
-extern void mmc_fixup_samsung_fw(struct mmc_card *card);
 
 #endif
