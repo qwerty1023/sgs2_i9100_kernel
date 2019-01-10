@@ -69,7 +69,7 @@ mali_dvfs_staycount_table mali_dvfs_staycount[MALI_DVFS_STEPS]={
 /*dvfs threshold*/
 mali_dvfs_threshold_table mali_dvfs_threshold[MALI_DVFS_STEPS]={
 	/*step 0*/{((int)((255*0)/100)), ((int)((255*85)/100))}, //0-85
-	/*step 1*/{((int)((255*45)/100)), ((int)((255*100)/100))} }; //75-100
+	/*step 1*/{((int)((255*75)/100)), ((int)((255*100)/100))} }; //75-100
 
 /*dvfs status*/
 mali_dvfs_currentstatus maliDvfsStatus;
@@ -186,7 +186,7 @@ static void mali_platform_wating(u32 msec)
 		read_val = _mali_osk_mem_ioread32(clk_register_map, 0x00);
 		if ((read_val & 0x8000)==0x0000) break;
 
-		_mali_osk_time_ubusydelay(5000); //SpeedMod: 5ms // 1000 -> 100 : 20101218
+		_mali_osk_time_ubusydelay(500); //SpeedMod: // 1000 -> 100 : 20101218
 	}
 	/* _mali_osk_time_ubusydelay(msec*1000);*/
 }
