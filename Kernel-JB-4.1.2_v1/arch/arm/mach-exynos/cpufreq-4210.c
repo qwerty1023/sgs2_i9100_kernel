@@ -433,7 +433,7 @@ static void __init set_volt_table(void)
 	case SUPPORT_1400MHZ:
 #if defined(CONFIG_EXYNOS4210_1200MHZ_SUPPORT)
 		for_1200 = true;
-		max_support_idx = L1;
+		max_support_idx = L0;
 #else
 		for_1400 = true;
 		max_support_idx = L0;
@@ -441,7 +441,7 @@ static void __init set_volt_table(void)
 		break;
 	case SUPPORT_1200MHZ:
 		for_1200 = true;
-		max_support_idx = L1;
+		max_support_idx = L0;
 		break;
 	case SUPPORT_1000MHZ:
 		for_1000 = true;
