@@ -242,7 +242,7 @@ static const unsigned int asv_voltage_A[CPUFREQ_LEVEL_END][8] = {
 	{ 1250000, 1125000, 1050000, 1125000, 1100000, 1075000, 1050000, 1025000 }, /*  900MHz */
 	{ 1200000, 1075000,  975000, 1075000, 1050000, 1025000, 1000000,  975000 }, /*  800MHz */
 	{ 1150000, 1050000,  950000, 1025000, 1000000,  975000,  950000,  925000 }, /*  700MHz */
-	{ 1125000, 1025000,  925000, 1000000, 1000000,  975000,  950000,  925000 }, /*  600MHz */
+	{ 1125000, 1025000,  950000, 1000000, 1000000,  975000,  950000,  925000 }, /*  600MHz */
 	{ 1100000, 1000000,  925000,  975000,  975000,  950000,  925000,  925000 }, /*  500MHz */
 	{ 1075000,  975000,  900000,  975000,  975000,  950000,  925000,  925000 }, /*  400MHz */
 	{ 1075000,  975000,  875000,  975000,  975000,  950000,  925000,  925000 }, /*  300MHz */
@@ -433,15 +433,15 @@ static void __init set_volt_table(void)
 	case SUPPORT_1400MHZ:
 #if defined(CONFIG_EXYNOS4210_1200MHZ_SUPPORT)
 		for_1200 = true;
-		max_support_idx = L0;
+		max_support_idx = L1;
 #else
 		for_1400 = true;
-		max_support_idx = L0;
+		max_support_idx = L1;
 #endif
 		break;
 	case SUPPORT_1200MHZ:
 		for_1200 = true;
-		max_support_idx = L0;
+		max_support_idx = L1;
 		break;
 	case SUPPORT_1000MHZ:
 		for_1000 = true;
