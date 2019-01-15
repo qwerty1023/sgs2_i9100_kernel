@@ -10,7 +10,6 @@ exec 2>&1
 echo $(date) START of post-init.sh
 
 
-
 # Remount rootfs rw
   /sbin/busybox mount rootfs -o remount,rw
 
@@ -27,7 +26,7 @@ if /sbin/busybox [ -f /data/.enable_logs ]; then
    echo Enable logs
 fi
 
-//Cargar modulo frandom
+#Cargar modulo frandom
 insmod /lib/modules/frandom.ko
 
 # IPv6 privacy tweak
@@ -100,17 +99,17 @@ insmod /lib/modules/frandom.ko
 /sbin/busybox mount -t rootfs -o remount,rw rootfs 
     
 
-mkdir -p /customkernel/property
-	echo true >> /customkernel/property/customkernel.cf-root 
-	echo true >> /customkernel/property/customkernel.base.cf-root 
-	echo Apolo >> /customkernel/property/customkernel.name 
-	echo "Kernel Apolo JB" >> /customkernel/property/customkernel.namedisplay 
-	echo 136 >> /customkernel/property/customkernel.version.number 
-	echo 5.6 >> /customkernel/property/customkernel.version.name 
-	echo true >> /customkernel/property/customkernel.bootani.zip 
-	echo true >> /customkernel/property/customkernel.bootani.bin 
-	echo true >> /customkernel/property/customkernel.cwm 
-	echo 5.0.2.7 >> /customkernel/property/customkernel.cwm.version
+# mkdir -p /customkernel/property
+#	echo true >> /customkernel/property/customkernel.cf-root 
+#	echo true >> /customkernel/property/customkernel.base.cf-root 
+#	echo Apolo >> /customkernel/property/customkernel.name 
+#	echo "Kernel Apolo JB" >> /customkernel/property/customkernel.namedisplay 
+#	echo 136 >> /customkernel/property/customkernel.version.number 
+#	echo 5.6 >> /customkernel/property/customkernel.version.name 
+#	echo true >> /customkernel/property/customkernel.bootani.zip 
+#	echo true >> /customkernel/property/customkernel.bootani.bin 
+#	echo true >> /customkernel/property/customkernel.cwm 
+#	echo 5.0.2.7 >> /customkernel/property/customkernel.cwm.version
 #/sbin/busybox mount -t rootfs -o remount,ro rootfs 
 
 
