@@ -978,9 +978,11 @@ static int sec_touchkey_early_suspend(struct early_suspend *h)
 	/* disable ldo11 */
 	touchkey_ldo_on(0);
 	mutex_unlock(&touchkey_enable_mutex);
+#ifdef CONFIG_TOUCHKEY_BLN
 	//to have a bright BLN
 	change_touch_key_led_voltage(touchkey_voltage_saved);
 	bln_suspended = 1;
+#endif
 	return 0;
 }
 
@@ -1016,6 +1018,7 @@ static int sec_touchkey_late_resume(struct early_suspend *h)
 	touchkey_enable = 1;
 	mutex_unlock(&touchkey_enable_mutex);
 
+#ifdef CONFIG_TOUCHKEY_BLN
 	bln_suspended = 0;
 	/* see if late_resume is running before DISABLE_BL */
 	if (BLN_ongoing) {
@@ -1033,6 +1036,7 @@ static int sec_touchkey_late_resume(struct early_suspend *h)
 		/* force DISABLE_BL to ignore the led state because we want it left on */
 		BLN_ongoing = 0;
 	}
+#endif
 
 #if defined(CONFIG_TARGET_LOCALE_NAATT) \
 || defined(CONFIG_TARGET_LOCALE_NA) || defined(CONFIG_MACH_Q1_BD)
@@ -2331,7 +2335,9 @@ static ssize_t force_disable_write( struct device *dev, struct device_attribute 
 
 	/* change light state if needed*/
 	if (newstate == 1 && led_disabled == 0) {
+#ifdef CONFIG_TOUCHKEY_BLN
 		disable_touchkey_backlights();
+#endif
 		led_disabled=newstate;
 	} else if (newstate == 0 && led_disabled == 1) {
 		led_disabled=0;
@@ -2507,11 +2513,13 @@ static int __init touchkey_init(void)
 		pr_err("Failed to create device file(%s)!\n",
 		       dev_attr_touch_sensitivity.attr.name);
 	}
+#ifdef CONFIG_TOUCHKEY_BLN
 	if (device_create_file(sec_touchkey,
 		&dev_attr_led_timeout) < 0) {
 		pr_err("Failed to create device file(%s)!\n",
 		       dev_attr_led_timeout.attr.name);
 	}
+#endif
 	if (device_create_file(sec_touchkey,
 		&dev_attr_force_disable) < 0) {
 		pr_err("Failed to create device file(%s)!\n",
