@@ -337,7 +337,7 @@ static void max17042_get_soc(struct i2c_client *client)
 	if (chip->is_enable) {
 		if (max17042_read_reg(client, MAX17042_REG_SOC_VF, data) < 0)
 			return;
-#ifndef PRODUCT_SHIP
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 		dev_info(&chip->client->dev, "%s : soc(%02x%02x)\n",
 				__func__, data[1], data[0]);
 #endif
@@ -413,7 +413,7 @@ static void max17042_get_soc(struct i2c_client *client)
 
 	chip->soc = soc;
 
-#ifndef PRODUCT_SHIP
+#ifndef CONFIG_SAMSUNG_PRODUCT_SHIP
 	dev_info(&client->dev, "%s : use raw (%d), soc (%d)\n",
 		__func__, chip->raw_soc, soc);
 #endif
@@ -632,7 +632,7 @@ static ssize_t sec_fg_store(struct device *dev,
 				power_supply_get_by_name("battery");
 			union power_supply_propval value;
 
-			if (!psy) {
+			if (psy == NULL) {
 				pr_err("%s: fail to get battery ps\n",
 					__func__);
 				return -ENODEV;
@@ -671,9 +671,15 @@ succeed:
 
 static bool max17042_check_status(struct i2c_client *client)
 {
-	struct max17042_chip *chip = i2c_get_clientdata(client);
+	struct max17042_chip *chip;
+	struct power_supply *psy = power_supply_get_by_name("battery");
 	u8 data[2];
 	bool ret = false;
+
+	if (psy != NULL)
+		return ret;
+	else
+		chip = i2c_get_clientdata(client);
 
 	if (chip->is_enable) {
 		/* check if Smn was generated */
