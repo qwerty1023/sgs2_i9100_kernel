@@ -348,6 +348,7 @@ int update_touchkey_brightness(int level)
 {
 	if(dyn_brightness)
 	{
+		if (level > 250) level = 250; // norm input
 		printk("Changing touchkey brightness %d\n", level);
 		touchkey_voltage = 2700 + ((level * 12) / 500)*50;
 		change_touch_key_led_voltage(touchkey_voltage);
@@ -1064,7 +1065,7 @@ static int sec_touchkey_late_resume(struct early_suspend *h)
 //guard
 
 //AOSPROM
-	/* restart the timer if needed */
+	/* on led and restart the timer if needed */
 	if (!led_disabled && led_timeout > 0) {
 		schedule_work(&led_fadein_work);
 		mod_timer(&led_timer, jiffies + msecs_to_jiffies(led_timeout));
