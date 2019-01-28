@@ -85,7 +85,7 @@ touchkey register
 
 int notification_timeout = -1;
 int led_disabled = 0; // 1= force disable the touchkey backlight
-int led_timeout;
+int led_timeout = 0;
 
 static DEFINE_SEMAPHORE(enable_sem);
 
@@ -109,7 +109,7 @@ static int breathing_step_idx = 0;
 
 static unsigned int touchkey_voltage = 2700;
 static unsigned int touchkey_voltage_saved = 2700;
-static bool dyn_brightness = false;
+static bool dyn_brightness = true;
 static bool blnww = false;
 
 static int led_fadein = 0, led_fadeout = 0;
@@ -349,7 +349,7 @@ int update_touchkey_brightness(int level)
 	if(dyn_brightness)
 	{
 		printk("Changing touchkey brightness %d\n", level);
-		touchkey_voltage = 2700 + ((level * 24) / 500)*50;
+		touchkey_voltage = 2700 + ((level * 12) / 500)*50;
 		change_touch_key_led_voltage(touchkey_voltage);
 	}
 	return 0;
@@ -1064,11 +1064,9 @@ static int sec_touchkey_late_resume(struct early_suspend *h)
 //guard
 
 //AOSPROM
-	if (!led_disabled) {
-		schedule_work(&led_fadein_work);
-	}
 	/* restart the timer if needed */
-	if (led_timeout > 0) {
+	if (!led_disabled && led_timeout > 0) {
+		schedule_work(&led_fadein_work);
 		mod_timer(&led_timer, jiffies + msecs_to_jiffies(led_timeout));
 	}
 
@@ -1389,7 +1387,6 @@ static ssize_t led_timeout_write( struct device *dev, struct device_attribute *a
 	if(led_timeout == 0)
 	{
 		del_timer(&led_timer);
-		schedule_work(&led_fadein_work);
 	}
 	else mod_timer(&led_timer, jiffies + msecs_to_jiffies(led_timeout));
 	return size;
@@ -2541,6 +2538,9 @@ static int __init touchkey_init(void)
 		printk(KERN_ERR
 	       "[TouchKey] registration failed, module not inserted.ret= %d\n",
 	       ret);
+	}
+	else {
+		change_touch_key_led_voltage(BL_STANDARD);
 	}
 	return ret;
 
