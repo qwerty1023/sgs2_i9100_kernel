@@ -815,6 +815,7 @@ static irqreturn_t max17042_irq_thread(int irq, void *irq_data)
 			__func__, data[1], data[0]);
 	}
 
+#if 0
 	max17042_read_reg(chip->client, MAX17042_REG_VCELL, data);
 	dev_info(&chip->client->dev, "%s : MAX17042_REG_VCELL(%02x%02x)\n",
 		__func__, data[1], data[0]);
@@ -840,7 +841,7 @@ static irqreturn_t max17042_irq_thread(int irq, void *irq_data)
 		__func__, gpio_get_value(GPIO_PMIC_IRQ),
 		gpio_get_value(chip->pdata->alert_gpio));
 
-#if 0
+
 	**max17042_read_reg(chip->client, MAX17042_REG_STATUS, data);
 	dev_info(&chip->client->dev, "%s : MAX17042_REG_STATUS(%02x%02x)\n",
 		__func__, data[1], data[0]);
