@@ -156,6 +156,13 @@ static void max17042_init_regs(struct i2c_client *client)
 		/* max17042_write_reg_array(client, pdata->init,
 			pdata->init_size); */
 
+/*		// tune RCOMP
+		data[1] = 0;
+		data[0] = 0x65;
+
+		max17042_write_reg(client, MAX17042_REG_RCOMP, data);
+*/
+		// tune FILTERCFG
 		if (max17042_read_reg(client, MAX17042_REG_FILTERCFG, data) < 0)
 			return;
 
@@ -175,7 +182,34 @@ static void max17042_alert_init(struct i2c_client *client)
 	max17042_write_reg_array(client, pdata->alert_init,
 		pdata->alert_init_size);
 }
+/*
+static int max17042_read_regs(struct i2c_client *client, unsigned int reg)
+{
+	u8 data[2];
+	u32 out_data = 0;
+	struct max17042_chip *chip = i2c_get_clientdata(client);
 
+	if (chip->is_enable) {
+		if (max17042_read_reg(client, reg, data) < 0)
+			return -1;
+		// read ok
+		switch (reg) {
+		case REMCAP_MIX_REG:
+		case FULLCAP_REG:
+		case DESIGNCAP_REG:
+			out_data = (data[1] << 8);
+			out_data |= data[0];
+			break;
+		default:
+			return -3;
+		}
+		// return calc val
+		return out_data;
+	} else
+		return -2;
+
+}
+*/
 static int max17042_read_vfocv(struct i2c_client *client)
 {
 	u8 data[2];
@@ -574,11 +608,15 @@ static enum power_supply_property max17042_battery_props[] = {
 static struct device_attribute sec_fg_attrs[] = {
 	SEC_FG_ATTR(fg_reset_soc),
 	SEC_FG_ATTR(fg_read_soc),
+//	SEC_FG_ATTR(fg_read_raw_data),
+	SEC_FG_ATTR(fg_read_regs),
 };
 
 enum {
 	FG_RESET_SOC = 0,
 	FG_READ_SOC,
+//	FG_READ_RAW_DATA,
+	FG_READ_REGS,
 };
 
 static ssize_t sec_fg_show_property(struct device *dev,
@@ -597,6 +635,29 @@ static ssize_t sec_fg_show_property(struct device *dev,
 		i += scnprintf(buf + i, PAGE_SIZE - i, "%d\n",
 			max17042_read_vfsoc(chip->client));
 		break;
+/*	case FG_READ_RAW_DATA:
+		i += scnprintf(buf + i, PAGE_SIZE - i, "Des: %d full: %d rem: %d\n",
+			max17042_read_regs(chip->client, DESIGNCAP_REG),
+			max17042_read_regs(chip->client, FULLCAP_REG),
+			max17042_read_regs(chip->client, REMCAP_MIX_REG));
+		break;
+*/
+	case FG_READ_REGS:
+		{
+		int reg;
+		u8 data[2];
+
+		for (reg = 0; reg < 0x50; reg++) {
+			max17042_read_reg(chip->client, reg, data);
+			i += scnprintf(buf + i, PAGE_SIZE - i, "%02x: %02x %02x\n", reg, data[1], data[0]);
+		}
+		for (reg = 0xe0; reg < 0x100; reg++) {
+			max17042_read_reg(chip->client, reg, data);
+			i += scnprintf(buf + i, PAGE_SIZE - i, "%02x: %02x %02x\n", reg, data[1], data[0]);
+		}
+		}
+		break;
+
 	default:
 		i = -EINVAL;
 	}
