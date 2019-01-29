@@ -351,10 +351,10 @@ static int max17042_recalc_soc(struct i2c_client *client, int boot_cnt)
 		max17042_read_reg(client, MAX17042_REG_SOC_VF, data);
 		soc = min((int)data[1], 100);
 
-		max17042_read_reg(client, MAX17042_REG_VCELL, data);
+		/*max17042_read_reg(client, MAX17042_REG_VCELL, data);
 		dev_info(&client->dev, "new vcell = %d, vfocv = %d, soc = %d\n",
 			 ((data[0] >> 3) + (data[1] << 5)) * 625 / 1000,
-			 max17042_read_vfocv(client), soc);
+			 max17042_read_vfocv(client), soc);*/
 	} else
 		soc = 70;
 
