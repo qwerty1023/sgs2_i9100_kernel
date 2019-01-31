@@ -283,6 +283,11 @@ static void max17042_reset_soc(struct i2c_client *client)
 			"VfOCV(%d), VfSOC(%d)\n",
 			__func__, max17042_read_vfocv(client),
 			max17042_read_vfsoc(client));
+
+		// tune RCOMP
+		data[1] = 0;
+		data[0] = 0x55;
+		max17042_write_reg(client, MAX17042_REG_RCOMP, data);
 	}
 
 	return;
