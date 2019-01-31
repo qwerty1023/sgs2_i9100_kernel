@@ -148,6 +148,7 @@ static void max17042_init_regs(struct i2c_client *client)
 {
 	struct max17042_chip *chip = i2c_get_clientdata(client);
 	u8 data[2];
+	//bool defaultSet = true;
 	/* struct max17042_platform_data *pdata = client->dev.platform_data; */
 
 	dev_info(&client->dev, "%s\n", __func__);
@@ -155,11 +156,10 @@ static void max17042_init_regs(struct i2c_client *client)
 	if (chip->is_enable) {
 		/* max17042_write_reg_array(client, pdata->init,
 			pdata->init_size); */
-
-/*		// tune RCOMP
+/*
+		// tune RCOMP
 		data[1] = 0;
-		data[0] = 0x65;
-
+		data[0] = 0x55;
 		max17042_write_reg(client, MAX17042_REG_RCOMP, data);
 */
 		// tune FILTERCFG
