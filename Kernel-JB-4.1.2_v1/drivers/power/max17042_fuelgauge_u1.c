@@ -27,6 +27,9 @@
 #include <linux/irq.h>
 #include <linux/gpio.h>
 
+#define STD_RCOMP 0x85
+#define NEW_RCOMP 0x60
+
 static ssize_t sec_fg_show_property(struct device *dev,
 				    struct device_attribute *attr, char *buf);
 
@@ -148,7 +151,8 @@ static void max17042_init_regs(struct i2c_client *client)
 {
 	struct max17042_chip *chip = i2c_get_clientdata(client);
 	u8 data[2];
-	//bool defaultSet = true;
+	bool defaultSet = true;
+	unsigned int tmpData;
 	/* struct max17042_platform_data *pdata = client->dev.platform_data; */
 
 	dev_info(&client->dev, "%s\n", __func__);
@@ -156,12 +160,20 @@ static void max17042_init_regs(struct i2c_client *client)
 	if (chip->is_enable) {
 		/* max17042_write_reg_array(client, pdata->init,
 			pdata->init_size); */
-/*
+
 		// tune RCOMP
-		data[1] = 0;
-		data[0] = 0x55;
-		max17042_write_reg(client, MAX17042_REG_RCOMP, data);
-*/
+		if (max17042_read_reg(client, MAX17042_REG_RCOMP, data) > 0) {
+			// read data ok
+			tmpData = (data[1] << 8) | data[0];
+
+			if (tmpData == STD_RCOMP) {
+				// write new
+				data[1] = 0;
+				data[0] = NEW_RCOMP;
+				max17042_write_reg(client, MAX17042_REG_RCOMP, data);
+			}
+		}
+
 		// tune FILTERCFG
 		if (max17042_read_reg(client, MAX17042_REG_FILTERCFG, data) < 0)
 			return;
@@ -279,15 +291,15 @@ static void max17042_reset_soc(struct i2c_client *client)
 
 		msleep(500);
 
+		// tune RCOMP
+		data[1] = 0;
+		data[0] = NEW_RCOMP;
+		max17042_write_reg(client, MAX17042_REG_RCOMP, data);
+
 		dev_info(&client->dev, "%s : After quick-start - "
 			"VfOCV(%d), VfSOC(%d)\n",
 			__func__, max17042_read_vfocv(client),
 			max17042_read_vfsoc(client));
-
-		// tune RCOMP
-		data[1] = 0;
-		data[0] = 0x55;
-		max17042_write_reg(client, MAX17042_REG_RCOMP, data);
 	}
 
 	return;
