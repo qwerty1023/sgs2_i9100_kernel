@@ -652,11 +652,15 @@ static ssize_t sec_fg_show_property(struct device *dev,
 		int reg;
 		u8 data[2];
 
-		for (reg = 0; reg < 0x50; reg++) {
+		/*for (reg = 0; reg < 0x50; reg++) {
 			max17042_read_reg(chip->client, reg, data);
 			i += scnprintf(buf + i, PAGE_SIZE - i, "%02x: %02x %02x\n", reg, data[1], data[0]);
 		}
 		for (reg = 0xe0; reg < 0x100; reg++) {
+			max17042_read_reg(chip->client, reg, data);
+			i += scnprintf(buf + i, PAGE_SIZE - i, "%02x: %02x %02x\n", reg, data[1], data[0]);
+		}*/
+		for (reg = 0; reg < 0x100; reg++) {
 			max17042_read_reg(chip->client, reg, data);
 			i += scnprintf(buf + i, PAGE_SIZE - i, "%02x: %02x %02x\n", reg, data[1], data[0]);
 		}
