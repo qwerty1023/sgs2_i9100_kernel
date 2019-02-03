@@ -454,7 +454,7 @@ static void max17042_get_soc(struct i2c_client *client)
 		}
 #else
 		/* adjusted soc by adding 0.45 */
-		soc += 45;
+		//soc += 45;
 		soc /= 100;
 #endif
 	} else
@@ -932,6 +932,17 @@ static int max17042_irq_init(struct max17042_chip *chip)
 			dev_err(&chip->client->dev,
 				"failed to enable wakeup src %d\n", ret);
 	}
+
+/*
+	if (max17042_read_reg(chip->client, MAX17042_REG_MISCCFG, data)
+		< 0)
+		return -1;
+
+	//Set Alert on SOCVF
+	data[0] |= 0x3;
+
+	max17042_write_reg(chip->client, MAX17042_REG_MISCCFG, data);
+*/
 
 	if (max17042_read_reg(chip->client, MAX17042_REG_CONFIG, data)
 		< 0)

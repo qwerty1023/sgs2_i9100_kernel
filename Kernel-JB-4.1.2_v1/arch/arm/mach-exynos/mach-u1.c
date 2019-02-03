@@ -6410,7 +6410,7 @@ struct max17042_reg_data max17042_alert_init_data[] = {
 	{ MAX17042_REG_SALRT_TH,	0x01,	0xFF },
 #else
 	/* SALRT Threshold setting to 2% => 1% wake lock */
-	{ MAX17042_REG_SALRT_TH,	0x02,	0xFF },
+	{ MAX17042_REG_SALRT_TH,	0x01,	0xFF }, // 2->1
 #endif
 	/* VALRT Threshold setting (disable) */
 	{ MAX17042_REG_VALRT_TH,	0x00,	0xFF },
