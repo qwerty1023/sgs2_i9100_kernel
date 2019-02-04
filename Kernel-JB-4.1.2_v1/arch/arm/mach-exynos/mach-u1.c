@@ -7478,15 +7478,15 @@ struct s5p_platform_tmu u1_tmu_data __initdata = {
 		.stop_1st_throttle  = 61,
 		.start_1st_throttle = 64,
 		.stop_2nd_throttle  = 87,
-		.start_2nd_throttle = 103,
-		.start_tripping     = 110,
-		.start_emergency    = 120,
+		.start_2nd_throttle = 95,
+		.start_tripping     = 100,
+		.start_emergency    = 110,
 		.stop_mem_throttle  = 80,
 		.start_mem_throttle = 85,
 	},
 	.cpufreq = {
 		.limit_1st_throttle  = 800000, /* 800MHz in KHz order */
-		.limit_2nd_throttle  = 200000, /* 200MHz in KHz order */
+		.limit_2nd_throttle  = 100000, /* 100MHz in KHz order */
 	},
 };
 #endif
