@@ -2172,7 +2172,7 @@ static void sec_bat_monitor_work(struct work_struct *work)
 	if (sec_bat_check_ing_level_trigger(info))
 		goto full_charged;
 
-#if !defined(CONFIG_MACH_Q1_BD)
+#if defined(CONFIG_MACH_Q1_BD)
 	if (info->cable_type == CABLE_TYPE_AC)
 #endif
 		if (sec_check_chgcurrent(info))
