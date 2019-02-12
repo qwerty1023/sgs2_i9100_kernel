@@ -201,10 +201,10 @@
 #define CURRENT_1ST_FULL_CHG		580		/* 190mA */
 #define CURRENT_2ND_FULL_CHG		540		/* 170mA */
 #else
-#define CURRENT_OF_FULL_CHG			850
+#define CURRENT_OF_FULL_CHG			450
 #endif
 #else
-#define CURRENT_OF_FULL_CHG			520
+#define CURRENT_OF_FULL_CHG			450
 #endif
 
 #define TEMP_BLOCK_COUNT			3
