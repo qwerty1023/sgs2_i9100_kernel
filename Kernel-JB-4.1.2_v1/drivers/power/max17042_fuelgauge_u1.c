@@ -455,7 +455,9 @@ static void max17042_get_soc(struct i2c_client *client)
 #else
 		/* adjusted soc by adding 0.45 */
 		//soc += 45;
-		soc /= 100;
+		//soc /= 100; - 
+		/*raw 1.6% ~ 97.6% */
+		soc = (soc > 100) ? ((soc - 60) * 100 / 9700) : 0;
 #endif
 	} else
 		soc = 70;
