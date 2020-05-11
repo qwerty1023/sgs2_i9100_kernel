@@ -217,7 +217,7 @@ static int tmu_start(struct tmu_info *info)
 
 	/* Set frequecny level */
 	exynos_cpufreq_get_level(800000, &data->cpulimit.throttle_freq);
-	exynos_cpufreq_get_level(100000, &data->cpulimit.warning_freq);
+	exynos_cpufreq_get_level(200000, &data->cpulimit.warning_freq);
 
 	/* Need to initail regsiter setting after getting parameter info */
 	/* [28:23] vref [11:8] slope - Tunning parameter */

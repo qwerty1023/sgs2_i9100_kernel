@@ -6410,7 +6410,7 @@ struct max17042_reg_data max17042_alert_init_data[] = {
 	{ MAX17042_REG_SALRT_TH,	0x01,	0xFF },
 #else
 	/* SALRT Threshold setting to 2% => 1% wake lock */
-	{ MAX17042_REG_SALRT_TH,	0x01,	0xFF }, // 2->1
+	{ MAX17042_REG_SALRT_TH,	0x02,	0xFF },
 #endif
 	/* VALRT Threshold setting (disable) */
 	{ MAX17042_REG_VALRT_TH,	0x00,	0xFF },
@@ -7486,7 +7486,7 @@ struct s5p_platform_tmu u1_tmu_data __initdata = {
 	},
 	.cpufreq = {
 		.limit_1st_throttle  = 800000, /* 800MHz in KHz order */
-		.limit_2nd_throttle  = 100000, /* 100MHz in KHz order */
+		.limit_2nd_throttle  = 200000, /* 200MHz in KHz order */
 	},
 };
 #endif
