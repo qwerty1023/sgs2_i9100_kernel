@@ -28,7 +28,7 @@
 #include <linux/gpio.h>
 
 #define STD_RCOMP 0x85
-#define NEW_RCOMP 0x60
+#define NEW_RCOMP 0x65
 
 static ssize_t sec_fg_show_property(struct device *dev,
 				    struct device_attribute *attr, char *buf);
